@@ -1,0 +1,339 @@
+<!--
+/********************************************************************
+
+Name: Collaboriso Web
+Homepage: http://github.com/ae5chylu5/collaboriso-web
+Author: ae5chylu5
+Description: Meteor app for managing iso repo
+
+Copyright (C) 2017 ae5chylu5
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+********************************************************************/
+-->
+
+<head>
+  <title>Collaboriso</title>
+</head>
+
+<body>
+
+</body>
+
+<template name="isosLayout">
+  {{> yield "navbar"}}
+  {{> yield "create"}}
+  {{> yield "main"}}
+</template>
+
+<template name="htmlLayout">
+  {{> yield "navbar"}}
+  {{> yield "create"}}
+  {{> yield "main"}}
+</template>
+
+<template name="isoLayout">
+  {{> yield "navbar"}}
+  {{> yield "create"}}
+  {{> yield "confirm"}}
+  {{> yield "main"}}
+  {{> yield "comments"}}
+</template>
+
+<template name="filterLayout">
+  {{> yield "navbar"}}
+  {{> yield "create"}}
+  {{> yield "filterbar"}}
+  {{> yield "main"}}
+</template>
+
+<template name="navbar_bs4">
+<nav class="navbar navbar-light navbar-toggleable-sm bg-faded fixed-top justify-content-center col-nav">
+    <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#collapsingNavbar3">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+    <a href="/" class="navbar-brand d-flex w-50 mr-auto"><img src="/collaboriso.png" class="col-logo"/><span class="col-spacer"></span>Collaboriso</a>
+    <div class="navbar-collapse collapse" id="collapsingNavbar3">
+        <ul class="navbar-nav mx-auto w-100 justify-content-center">
+            {{#if isLoggedIn}}
+            <li class="nav-item active">
+                <a class="nav-link" href="#">
+                <button class="btn btn-success btn-sm navbar-btn js-show-mod-add-iso" title="create iso">create</button>
+                </a>
+            </li>
+            {{/if}}
+            <li class="nav-item">
+                <a class="nav-link" href="#">
+                {{> loginButtons}}
+                </a>
+            </li>
+        </ul>
+        <ul class="nav navbar-nav ml-auto w-100 justify-content-end">
+            <li class="nav-item">
+                <a class="nav-link{{#if isActive 'stable'}} active{{/if}}" href="/stable">stable</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link{{#if isActive 'unverified'}} active{{/if}}" href="/unverified">unverified</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link{{#if isActive 'about'}} active{{/if}}" href="/about">about</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="https://www.github.com/ae5chylu5/collaboriso">source</a>
+            </li>
+        </ul>
+    </div>
+</nav>
+</template>
+
+<template name="navbar">
+<nav class="navbar navbar-default navbar-fixed-top col-nav">
+  <div class="container-fluid">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#nav-collapse-div" aria-expanded="false">
+        <span class="sr-only"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a href="/" class="navbar-brand"><img src="/collaboriso.png" class="col-logo"/></a>
+      <a href="/" class="navbar-brand">Collaboriso</a>
+    </div>
+
+    <div class="collapse navbar-collapse" id="nav-collapse-div">
+      <ul class="nav navbar-nav">
+        {{#if isLoggedIn}}
+        <!-- using true for testing purposes. will eventually be changed to isGitHub -->
+        {{#if true}}
+        <li class="nav-item">
+          <a class="nav-link" href="#">
+           Welcome, {{getUserName}}!
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link js-show-mod-add-iso" href="#">
+            <div class="login-buttons-dropdown-align-">
+            <div class="login-buttons-with-only-one-button">
+                <div class="login-text-and-button">
+                <div class="login-button single-login-button configure-button">
+                    <span class="text-besides-image configure-text-github col-create-btn" title="create iso">Create</span>
+                </div>
+                </div>
+            </div>
+            </div>
+          </a>
+        </li>
+        {{/if}}
+        {{/if}}
+        <li class="nav-item">
+          <a class="nav-link" href="#">
+          {{> loginButtons}}
+          </a>
+        </li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+            <li class="nav-item">
+                <a class="nav-link{{#if isActive 'stable'}} col-bold{{/if}}" href="/stable">stable</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link{{#if isActive 'unverified'}} col-bold{{/if}}" href="/unverified">unverified</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link{{#if isActive 'about'}} col-bold{{/if}}" href="/about">about</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="https://www.github.com/ae5chylu5/collaboriso" target="_blank">source</a>
+            </li>
+      </ul>
+    </div><!-- /.navbar-collapse -->
+  </div><!-- /.container-fluid -->
+</nav>
+</template>
+
+<template name="confirm_delete">
+<div class="modal fade" id="confirm_delete">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title col-bold">delete</div>
+            </div>
+            <div class="modal-body col-center">
+                ARE YOU SURE?!
+            </div>
+            <div class="modal-footer">
+                <button class="js-del-iso-confirm btn btn-danger btn-sm">delete</button>
+                <button class="btn btn-warning btn-sm" data-dismiss="modal">cancel</button>
+            </div>
+        </div>
+    </div>
+</div>
+</template>
+
+<template name="add_iso_form">
+  <div class="modal fade" id="mod_add_iso">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <div id="modal_create" class="modal-title col-bold">submit new iso</div>
+          <div id="modal_edit" class="modal-title col-bold col-hide">edit iso</div>
+        </div>
+        <div class="modal-body">
+          <form class="js-add-iso" id="form_add_iso">
+            <div class="form-group">
+              <input class="form-control required col-full-width" type="text" name="title" placeholder="title"/>
+            </div>
+            <div class="form-group">
+              <table class="col-iso-tbl" cellpadding="0" cellspacing="0"><tr>
+              <td><input class="form-control js-is-image-valid" type="file" name="image" accept=".gif, .png, .jpg, .jpeg, image/gif, image/png, image/jpeg"/></td>
+              <td style="width:68px; text-align:right;"><img id="imagePreview" class="col-img-prev" src="/collaboriso.png" onload="MyUtils.convertImage(this, 210, 210);"/></td>
+              </tr></table>
+              <input id="imageData" name="image_data" type="hidden" value=""/>
+            </div>
+            <div class="form-group">
+              <input class="form-control required col-full-width" type="text" name="category" placeholder="category"/>
+            </div>
+            <div class="form-group">
+              <input class="form-control required col-full-width" type="text" name="hash" id="form_hash" placeholder="sha1 hash"/>
+              <input type="hidden" name="_id" value=""/>
+            </div>
+            <div class="form-group">
+              <table><tr><td><input class="form-control required col-strict-check" type="checkbox" name="strictHash" checked="true" title="Is this iso generated on-demand? Will the hash ever change? This should remain checked for nearly every iso."/></td><td><label class="col-strict-lbl">strict</label></td></tr></table>
+            </div>
+            <div class="form-group">
+              <textarea class="form-control required col-modal-tarea" name="bootOptions" placeholder="grub boot options"></textarea>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button class="js-sub-add-iso btn btn-success btn-sm">let's rock!</button>
+          <button class="btn btn-warning btn-sm" data-dismiss="modal">run away!</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+
+<template name="comments">
+  <div class="container">
+
+  </div>
+</template>
+
+<template name="filterbar">
+  <div class="container">
+    <span class="col-filt-lbl">sort by:</span>
+    <a role="button" class="btn btn-sm {{#if isSortedDate psort}}btn-primary active{{else}}btn-info{{/if}}" href="/{{prepo}}/{{pfilter}}:{{pfilteropt}}/date:{{psortopt}}">date</a> |
+    <a role="button" class="btn btn-sm {{#if isSortedDate psort}}btn-info{{else}}btn-primary active{{/if}}" href="/{{prepo}}/{{pfilter}}:{{pfilteropt}}/rating:{{psortopt}}">rating</a> &nbsp;
+    <span class="col-filt-lbl">order by:</span>
+    <a role="button" class="btn btn-sm {{#if isSortedDsc psortopt}}btn-primary active{{else}}btn-info{{/if}}" href="/{{prepo}}/{{pfilter}}:{{pfilteropt}}/{{psort}}:dsc">newest</a> |
+    <a role="button" class="btn btn-sm {{#if isSortedDsc psortopt}}btn-info{{else}}btn-primary active{{/if}}" href="/{{prepo}}/{{pfilter}}:{{pfilteropt}}/{{psort}}:asc">oldest</a>
+  </div>
+</template>
+
+<template name="iso">
+  <div class="container">
+  <div class="row">
+  <div class="col-xs-12 col-md-12 col-iso-outer" id="{{_id}}">
+    <div class="col-iso-inner">
+        <div class="col-iso-fground">
+        <table class="col-iso-tbl">
+            <tr>
+            <td class="col-tbl-top-left">
+                <a class="col-iso-title" href="/iso/{{_id}}">{{title}}</a><br/>
+                {{> starsRating mutable=true class="js-rate-iso" id=_id}}
+            </td>
+            <td class="col-tbl-top-right">
+                <a href="/{{getRepoName status}}/group:{{category}}/{{getSortType}}:{{getSortOpt}}" class="col-iso-cat">{{category}}</a><br/>
+                <a href="/{{getRepoName status}}/user:{{uid}}/{{getSortType}}:{{getSortOpt}}" class="col-iso-user" title="created by">{{uname}}</a>
+            </td>
+            </tr>
+        </table>
+      <textarea class="col-iso-tarea" readonly="true">{{bootOptions}}</textarea>
+        <table class="col-iso-tbl">
+            <tr>
+            <td class="col-tbl-bot-left">
+      {{#if isUser uid}}
+      <button class="js-del-iso btn btn-danger btn-sm col-iso-btn">delete</button>
+      <button class="js-edit-iso btn btn-success btn-sm col-iso-btn">edit</button>
+      {{/if}}
+            </td>
+            <td class="col-tbl-bot-right">
+                <span class="col-iso-date" title="date created">{{created}}</span><br/>
+                <span class="col-iso-hash" title="sha1">{{hash}}</span>
+            </td>
+            </tr>
+        </table>
+        </div>
+        <img class="col-iso-bground" src="{{image}}"/>
+    </div>
+  </div>
+  </div>
+  </div>
+</template>
+
+<template name="isos">
+  <div class="container">
+    <div class="row">
+        {{#each isos}}
+        <div class="col-xs-12 col-md-4 col-iso-outer" id="{{_id}}">
+            <div class="col-iso-inner">
+                <div class="col-iso-fground">
+                <table class="col-iso-tbl">
+                  <tr>
+                    <td class="col-tbl-top-left">
+                      <a class="col-iso-title" href="/iso/{{_id}}">{{title}}</a><br/>
+                      {{> starsRating mutable=true class="js-rate-iso" id=_id rating=getRating }}
+                    </td>
+                    <td class="col-tbl-top-right">
+                      <a href="/{{getRepoName status}}/group:{{category}}/{{getSortType}}:{{getSortOpt}}" class="col-iso-cat">{{category}}</a><br/>
+                      <a href="/{{getRepoName status}}/user:{{uid}}/{{getSortType}}:{{getSortOpt}}" class="col-iso-user" title="created by">{{uname}}</a>
+                    </td>
+                  </tr>
+                </table>
+                <textarea class="col-iso-tarea" readonly="true">{{bootOptions}}</textarea>
+                <table class="col-iso-tbl">
+                  <tr>
+                    <td class="col-tbl-bot-left">
+                    </td>
+                    <td class="col-tbl-bot-right">
+                      <span class="col-iso-date" title="date created">{{created}}</span><br/>
+                      <span class="col-iso-hash" title="sha1">{{hash}}</span>
+                    </td>
+                  </tr>
+                </table>
+                </div>
+                <img class="col-iso-bground" src="{{image}}"/>
+            </div>
+        </div>
+        {{/each}}
+    </div>
+  </div>
+</template>
+
+<template name="about">
+  <div class="container">
+This project was born out of frustration. Most of my projects begin in much the same way. I had tested literally every multiboot usb generator that I could find and they all lacked support for at least 1 of the ISOs that I needed to boot. I eventually realized that the problem was not the applications but the method by which the application determined the compatibility of the iso.
+<br/><br/>
+To solve this problem I decided what was needed was a hollow application that focused solely on the design of the grub menu and the generation of the usb device. The collaboriso application does not attempt to analyze the iso in any way. It is literally impossible for any application to universally support every ISO. There are infinite combinations of kernel boot parameters, casper options and initrd scripts. The kernel image and initrd files could be located in any folder and could contain entirely unexpected file names.
+<br/><br/>
+Let's focus on what we know we can do. We can generate a bootable usb device. Guaranteed. We can generate a grub.cfg file and corresonding menus. That leaves us with a bootable usb device with grub menus that lack any and all boot commands. So how is that useful?
+<br/><br/>
+This web app will enable users on a global scale to contribute grub boot commands for any given iso. Once those commands have been verified that iso will move into the stable/verified repo. When that occurs it can then be downloaded by anyone running the qt client through its update feature. Just imagine, one application that supports every iso without ever having to analyze a single file.
+<br/><br/>
+The collaboriso app uses sha1 hashes to identify ISOs. Other multiboot apps often use filenames to determine compatibility. Well, what if you've downloaded an iso and renamed it? Maybe you want to specify the platform and architecture in the filename. The second you rename the iso it breaks its compatibility with many multiboot apps. By using the hash you can name the iso anything you want and we'll still know whether it's supported.
+<br/><br/>
+I hope you find this application useful. I've put a ton of time into it and it's still very early in the development process. Please contribute by posting boot commands for any ISOs that you've tested successfully. And please post bug reports on the github page. Thanks for visiting and I hope you enjoy the software!
+  </div>
+</template>
